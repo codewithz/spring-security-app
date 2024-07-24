@@ -1,8 +1,6 @@
 package com.cwz.config;
 
-import com.cwz.filter.AuthoritiesLoggingAfterFilter;
-import com.cwz.filter.CsrfCookieFilter;
-import com.cwz.filter.RequestValidationBeforeFilter;
+import com.cwz.filter.*;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Bean;
@@ -10,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.password.CompromisedPasswordChecker;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -41,6 +40,7 @@ public class ProjectSecurityConfig {
 //        http.authorizeHttpRequests((requests) -> requests.anyRequest().permitAll());
 //        http.authorizeHttpRequests((requests) -> requests.anyRequest().denyAll());
         http
+                .sessionManagement(sessionConfig-> sessionConfig.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .cors((corsConfig)->corsConfig.configurationSource(new CorsConfigurationSource() {
                     @Override
                     public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
@@ -48,6 +48,7 @@ public class ProjectSecurityConfig {
                         config.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
                         config.setAllowedMethods(Collections.singletonList("*")); //GET<POST<PUT<DELETE
                         config.setAllowCredentials(true);
+                        config.setExposedHeaders(Collections.singletonList("Authorization"));
                         config.setAllowedHeaders(Collections.singletonList("*"));
                         config.setMaxAge(3600L);
                         return  config;
@@ -61,6 +62,8 @@ public class ProjectSecurityConfig {
                 .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
                 .addFilterAfter(new AuthoritiesLoggingAfterFilter(),BasicAuthenticationFilter.class)
                 .addFilterBefore(new RequestValidationBeforeFilter(), BasicAuthenticationFilter.class)
+                .addFilterAfter(new JwtTokenGeneratorFilter(),BasicAuthenticationFilter.class)
+                .addFilterBefore(new JwtTokenValidatorFilter(),BasicAuthenticationFilter.class)
                 .authorizeHttpRequests((requests) ->
                 requests
 //                        .requestMatchers("/accounts","/loans","/cards","/balance").authenticated()
@@ -68,7 +71,7 @@ public class ProjectSecurityConfig {
                         .requestMatchers("/balance").hasAnyAuthority("READ","WRITE")
                         .requestMatchers("/loans").hasAuthority("READ")
                         .requestMatchers("/cards").hasAuthority("READ")
-                        .requestMatchers("/notices","/contact","/error","/register").permitAll()
+                        .requestMatchers("/notices","/contact","/error","/register","/user").permitAll()
 
                 );
         http.formLogin(withDefaults());
