@@ -1,6 +1,8 @@
 package com.cwz.config;
 
+import com.cwz.filter.AuthoritiesLoggingAfterFilter;
 import com.cwz.filter.CsrfCookieFilter;
+import com.cwz.filter.RequestValidationBeforeFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Bean;
@@ -57,6 +59,8 @@ public class ProjectSecurityConfig {
                                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                         )
                 .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
+                .addFilterAfter(new AuthoritiesLoggingAfterFilter(),BasicAuthenticationFilter.class)
+                .addFilterBefore(new RequestValidationBeforeFilter(), BasicAuthenticationFilter.class)
                 .authorizeHttpRequests((requests) ->
                 requests
 //                        .requestMatchers("/accounts","/loans","/cards","/balance").authenticated()
