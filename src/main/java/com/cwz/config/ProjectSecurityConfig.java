@@ -4,6 +4,7 @@ import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.authentication.password.CompromisedPasswordChecker;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,6 +14,7 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.password.HaveIBeenPwnedRestApiPasswordChecker;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -39,7 +41,7 @@ public class ProjectSecurityConfig {
         UserDetails user= User.withUsername("user").password("{noop}password")
                 .authorities("READ").build();
 
-        UserDetails admin= User.withUsername("admin").password("{bcrypt}$2a$12$BDvx/PcAkFYDj7pGADX53.mZbqVrBPYAhvJkBkjuhp3sc2eDcZpue")
+        UserDetails admin= User.withUsername("admin").password("{bcrypt}$2a$12$PNcmiGuQfg38Puw79fDiXeSadDMzghhtxgDwZXRQkEoxz4L7VMuFC")
                 .authorities("WRITE","READ").build();
 
         return new InMemoryUserDetailsManager(user, admin);
@@ -49,5 +51,10 @@ public class ProjectSecurityConfig {
     public PasswordEncoder passwordEncoder() {
 //        return new BCryptPasswordEncoder();
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
+    }
+
+    @Bean
+    public CompromisedPasswordChecker compromisedPasswordChecker() {
+        return  new HaveIBeenPwnedRestApiPasswordChecker();
     }
 }
