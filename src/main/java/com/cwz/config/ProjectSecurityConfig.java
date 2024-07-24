@@ -28,7 +28,9 @@ public class ProjectSecurityConfig {
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
 //        http.authorizeHttpRequests((requests) -> requests.anyRequest().permitAll());
 //        http.authorizeHttpRequests((requests) -> requests.anyRequest().denyAll());
-        http.authorizeHttpRequests((requests) ->
+        http
+                .csrf((csrfConfig)->csrfConfig.disable())
+                .authorizeHttpRequests((requests) ->
                 requests
                         .requestMatchers("/accounts","/loans","/cards","/balance").authenticated()
                         .requestMatchers("/notices","/contact","/error","/register").permitAll()
