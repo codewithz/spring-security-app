@@ -31,7 +31,7 @@ public class ProjectSecurityConfig {
         http.authorizeHttpRequests((requests) ->
                 requests
                         .requestMatchers("/accounts","/loans","/cards","/balance").authenticated()
-                        .requestMatchers("/notices","/contact","/error").permitAll()
+                        .requestMatchers("/notices","/contact","/error","/register").permitAll()
 
                 );
         http.formLogin(withDefaults());
