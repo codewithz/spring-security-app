@@ -59,7 +59,11 @@ public class ProjectSecurityConfig {
                 .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
                 .authorizeHttpRequests((requests) ->
                 requests
-                        .requestMatchers("/accounts","/loans","/cards","/balance").authenticated()
+//                        .requestMatchers("/accounts","/loans","/cards","/balance").authenticated()
+                        .requestMatchers("/accounts").hasAuthority("READ")
+                        .requestMatchers("/balance").hasAnyAuthority("READ","WRITE")
+                        .requestMatchers("/loans").hasAuthority("READ")
+                        .requestMatchers("/cards").hasAuthority("READ")
                         .requestMatchers("/notices","/contact","/error","/register").permitAll()
 
                 );
