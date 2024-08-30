@@ -56,9 +56,10 @@ public class ProjectSecurityConfig {
                 }))
                 .csrf((csrfConfig)->
                         csrfConfig.csrfTokenRequestHandler(csrfTokenRequestAttributeHandler)
-                                .ignoringRequestMatchers("/contact","/register")
+                                .ignoringRequestMatchers("/contact","/register","/user")
                                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                         )
+//                .csrf(csrfConfig->csrfConfig.disable())
                 .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
                 .addFilterAfter(new AuthoritiesLoggingAfterFilter(),BasicAuthenticationFilter.class)
                 .addFilterBefore(new RequestValidationBeforeFilter(), BasicAuthenticationFilter.class)

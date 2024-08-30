@@ -48,7 +48,7 @@ public class CustomerController {
         }
     }
 
-    @GetMapping("/user")
+    @RequestMapping("/user")
     public Customer getCustomerDetailsAfterLogin(Authentication authentication){
         Optional<Customer> optionalCustomer=customerRepository.findCustomerByEmail(authentication.getName());
         return  optionalCustomer.orElse(null);
